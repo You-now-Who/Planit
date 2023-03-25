@@ -70,7 +70,10 @@ const TodoList = () => {
         </button>
       </form>
       {todos.length === 0 ? (
-        <p>No todos yet. Add one above!</p>
+        <div className="text-center flex flex-col h-[80vh] item-center justify-center text-gray-500 ">
+            <span className="text-3xl block m-3 ">No tasks yet</span>
+            <span>Add your to-dos and keep track of them.</span>
+        </div>
       ) : (
         <ul className="list-disc pl-4">
           {todos.map((todo) => (
