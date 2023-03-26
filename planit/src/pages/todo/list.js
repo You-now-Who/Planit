@@ -115,7 +115,7 @@ const TaskForm = ({ onSubmit }) => {
 
 
 
-const GetTasks = () => {
+const Tasks = () => {
   const [tasks, setTasks] = useState([]);
   const [completedTasks, setCompletedTasks] = useState([]);
   
@@ -250,4 +250,4 @@ const GetTasks = () => {
   );
 };
 
-export default GetTasks;
+export default Tasks;

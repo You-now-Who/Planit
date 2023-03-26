@@ -6,7 +6,7 @@ const { v4: uuidv4 } = require('uuid');
 
 const client = new Client()
     .setEndpoint('https://localhost/v1') // Your API Endpoint
-    .setProject('641f366aecda205350ba'); // Your project ID
+    .setProject('641f366aecda205350ba');
 
 const account = new Account(client);
 
@@ -37,13 +37,16 @@ export default function Register() {
     console.log(email)
     console.log(password)
 
-    account.create( email, email, password).then(function (response) {
+    const promise = await account.create( email, email, password)
+    promise.then(function (response) {
         console.log(response);
         }, function (error) {
         console.log(error);
         });
 
-    await createAccount(uuid, email, password);    
+    console.log(promise)
+
+    // await createAccount(uuid, email, password);    
     
     console.log('Completed')
 
