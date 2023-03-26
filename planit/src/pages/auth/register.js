@@ -5,20 +5,13 @@ import Link from 'next/link';
 const { v4: uuidv4 } = require('uuid');
 
 const client = new Client()
-    .setEndpoint('https://localhost/v1') // Your API Endpoint
+    .setEndpoint('http://localhost/v1') // Your API Endpoint
     .setProject('641f366aecda205350ba');
 
 const account = new Account(client);
 
 console.log(account)
 
-async function createAccount(uuid, email, password) {
-    await account.create( uuid, email, password).then(function (response) {
-        console.log(response);
-        }, function (error) {
-        console.log(error);
-        });
-    }
 
 export default function Register() {
   const [email, setEmail] = useState('hello@hello.com');
@@ -37,12 +30,8 @@ export default function Register() {
     console.log(email)
     console.log(password)
 
-    const promise = await account.create( email, email, password)
-    promise.then(function (response) {
-        console.log(response);
-        }, function (error) {
-        console.log(error);
-        });
+    
+    const promise = await account.create( uuid, email, password)
 
     console.log(promise)
 
@@ -50,7 +39,7 @@ export default function Register() {
     
     console.log('Completed')
 
-    //   router.push('/');
+      router.push('/auth/login');
 
   };
 

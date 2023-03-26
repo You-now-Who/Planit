@@ -2,14 +2,16 @@ import React, { useState } from "react";
 import { format } from "date-fns";
 import Navbar from "@/components/Navbar";
 const { v4: uuidv4 } = require('uuid');
-import { Client, Databases } from "appwrite";
+import { Client, Databases, Query } from "appwrite";
 import Calendar from '@/components/Calendar';
+import Chatbot from '@/components/Chatbot';
 
 const client = new Client()
-    .setEndpoint('https://127.0.0.1/v1')
+    .setEndpoint('http://127.0.0.1/v1')
     .setProject('641f366aecda205350ba');
 
 const databases = new Databases(client);
+
 
 
 const Task = ({ task, index, onDelete, onComplete, type }) => {
@@ -114,27 +116,44 @@ const TaskForm = ({ onSubmit }) => {
 };
 
 
+const fetch_tasks = async () => {
+  
+  const response = await databases.listDocuments('641f793fd8555c8ac5c3', '641f794bea74d8e8e002');
+  
+  return response;
+}
 
 const GetTasks = () => {
   const [tasks, setTasks] = useState([]);
   const [completedTasks, setCompletedTasks] = useState([]);
+ 
+  let prom
+
+
+  (
+    async() => {
+      prom = fetch_tasks();  
+      console.log(await prom)
+    }
+  )()
   
-  const addDoc = async (task) => {
+  console.log(prom)
+
+  const addDoc = async (task, id) => {
     console.log(task)
     // console.log(task.title)
      const promise = await databases.createDocument(
       '641f793fd8555c8ac5c3',
       '641f794bea74d8e8e002',
-      "H3dfo",
+      id,
       {
-          'title': "task.title",
-          'priority': "task.priority",
-          'dueDate': 2-2-2021,
+          'title': task.title,
+          'priority': task.priority,
+          'dueDate': task.dueDate,
           'completed': false
       }
   )
 
-  console.log(promise)
   
   try {
     const response = await promise;
@@ -147,20 +166,21 @@ const GetTasks = () => {
   // const response = await promise;
   // console.log(response)
 
-  await promise.then(function (response) {
-      console.log(response);
-  }, function (error) {
-      console.log(error);
-  });  
+  // await promise.then(function (response) {
+  //     console.log(response);
+  // }, function (error) {
+  //     console.log(error);
+  // });  
 };
 
 
   // console.log(addDoc({title: "test", priority: "test", dueDate: "test", completed: false}))
 
   const addTask = async (task) => {
-    setTasks([...tasks, task]);
+    const id = uuidv4();
 
-    // await addDoc(task);
+    setTasks([...tasks, task]);
+    await addDoc(task, id);
 
   };
 
@@ -193,6 +213,7 @@ const GetTasks = () => {
     <>
 
     <Navbar />
+    <Chatbot/>
 
 
     <div className="grid grid-rows-3 grid-flow-col gap-4">
@@ -229,10 +250,7 @@ const GetTasks = () => {
             </div>
           )
         }
-        
       </div>
-      
-
       
       <div className="mt-8">
           {completedTasks.length > 0 && (
