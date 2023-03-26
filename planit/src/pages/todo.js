@@ -19,7 +19,8 @@ const Task = ({ task, index, onDelete, onComplete, type }) => {
 
   const priorityClass = task.priority === "high" ? "text-red-500" : task.priority === "medium" ? "text-yellow-500" : "text-green-500";
 
-  const formattedDate = format(task.dueDate, "MM/dd/yyyy");
+
+  // const formattedDate = format(task.dueDate, "MM/dd/yyyy");
 
   return (
     <div className="flex items-center justify-between py-2 border-b">
@@ -107,7 +108,7 @@ const TaskForm = ({ onSubmit }) => {
       />
       <button
         type="submit"
-        className="px-2 py-1 text-blue-600 border border-blue-500 rounded hover:bg-blue-600 hover:text-white focus:outline-none"
+        className="px-2 mx-5 py-1 text-blue-600 border border-blue-500 rounded hover:bg-blue-600 hover:text-white focus:outline-none"
       >
         Add Task
       </button>
@@ -118,33 +119,48 @@ const TaskForm = ({ onSubmit }) => {
 
 const fetch_tasks = async () => {
   
-  const response = await databases.listDocuments('641f793fd8555c8ac5c3', '641f794bea74d8e8e002');
+  const response = await databases.listDocuments('641f793fd8555c8ac5c3', '6420158e369287597086');
   
   return response;
 }
+let prom
+var pizza = null
+const fetchTasks = async () => {
+  prom = fetch_tasks();  
+  let res = await prom
+  // setAppwriteTasks(res.documents)
+  // console.log(appwriteTasks)
+  console.log(res.documents)
+  pizza = res.documents
+  }
+  
+  (async () => {
+
+    await fetchTasks()
+    // console.log(pizza)
+
+  })()
 
 const GetTasks = () => {
   const [tasks, setTasks] = useState([]);
+  const [appwriteTasks, setAppwriteTasks] = useState([]);
   const [completedTasks, setCompletedTasks] = useState([]);
  
-  let prom
-
-
-  (
-    async() => {
-      prom = fetch_tasks();  
-      console.log(await prom)
-    }
-  )()
+  // if( pizza != null) {
+  //   console.log(pizza)
+  //   setAppwriteTasks(pizza)
+  // }
+ 
+  // // fetchTasks()
   
-  console.log(prom)
 
   const addDoc = async (task, id) => {
+    fetchTasks()
     console.log(task)
     // console.log(task.title)
      const promise = await databases.createDocument(
       '641f793fd8555c8ac5c3',
-      '641f794bea74d8e8e002',
+      '6420158e369287597086',
       id,
       {
           'title': task.title,
@@ -152,6 +168,7 @@ const GetTasks = () => {
           'dueDate': task.dueDate,
           'completed': false
       }
+    
   )
 
   
@@ -221,16 +238,43 @@ const GetTasks = () => {
     {/* <div className="bg-gray-100 ">
       <Calendar></Calendar>
     </div> */}
-
+    
     <div className="max-w-2xl mx-auto">
+    <button
+        className="px-3 mx-5 my-3 py-1 text-blue-600 border border-cyan-500 rounded hover:bg-cyan-600 hover:text-white focus:outline-none"
+        onClick={
+          (
+            async () => {
+              await fetchTasks()
+              console.log(pizza)
+              setAppwriteTasks(pizza)
+            }
+          )
+
+        }
+      >
+        Reload
+      </button>
       <h1 className="text-4xl font-bold text-center py-8">Tasks</h1>
+
       <TaskForm onSubmit={addTask} />
       <div className="mt-8">
         <h2 className="text-2xl font-bold my-4">Tasks</h2>
         {
           tasks.length > 0 ? (
             <>
-            {tasks.map((task, index) => (
+            {/* {tasks.map((task, index) => (
+              <Task
+                key={index}
+                task={task}
+                index={index}
+                onDelete={deleteTask}
+                onComplete={completeTask}
+                type={"task"}
+              />
+            ))} */}
+
+            {appwriteTasks.map((task, index) => (
               <Task
                 key={index}
                 task={task}
@@ -240,6 +284,7 @@ const GetTasks = () => {
                 type={"task"}
               />
             ))}
+
             </>
           )
 
